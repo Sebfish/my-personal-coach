@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 1 - My Personal Coach</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Pec</h1>
+    <div class="container">
+        <div id="input-container">
+            <div class="row"><input type="text" placeholder="Bloc 1"><input type="text" placeholder="Bloc 2"><input type="text" placeholder="Bloc 3"></div>
+            <div class="row"><input type="text" placeholder="Bloc 1"><input type="text" placeholder="Bloc 2"><input type="text" placeholder="Bloc 3"></div>
+            <div class="row"><input type="text" placeholder="Bloc 1"><input type="text" placeholder="Bloc 2"><input type="text" placeholder="Bloc 3"></div>
+            <div class="row"><input type="text" placeholder="Bloc 1"><input type="text" placeholder="Bloc 2"><input type="text" placeholder="Bloc 3"></div>
+            <div class="row"><input type="text" placeholder="Bloc 1"><input type="text" placeholder="Bloc 2"><input type="text" placeholder="Bloc 3"></div>
+        </div>
+        <button onclick="addRow()">Ajouter une ligne</button>
+        <textarea id="comment" placeholder="Ajoutez un commentaire..."></textarea>
+        <button onclick="saveData()">Enregistrer</button>
+    </div>
+    <div class="container">
+        <h2>Données enregistrées</h2>
+        <div id="saved-data-container"></div>
+        <div class="saved-blocks" id="saved-container"></div>
+    </div>
+    
+
+    <script src="script.js"></script>
+</body>
+</html>
