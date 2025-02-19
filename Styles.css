@@ -15,12 +15,30 @@ body {
     width: 90%;
     max-width: 600px;
     background: white;
-    padding: 20px;
+    padding: 15px; /* Réduit le padding intérieur */
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px; /* Réduit l'espace entre les containers */
 }
 
-/* Ligne d'inputs */
+
+/* Titre principal */
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+/* Grand champ de texte */
+.large-textarea {
+    width: 100%;
+    height: 100px;
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Ligne des petits inputs */
 .row {
     display: flex;
     justify-content: space-between;
@@ -28,8 +46,8 @@ body {
 }
 
 .row input {
-    width: 32%;
-    padding: 8px;
+    width: 18%;
+    padding: 6px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
@@ -37,23 +55,24 @@ body {
 /* Zone de commentaire */
 textarea {
     width: 100%;
-    height: 80px;
-    margin-top: 10px;
-    padding: 8px;
+    height: 60px; /* Réduction de la hauteur de la zone de texte */
+    margin-top: 5px;
+    padding: 6px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
 
 /* Boutons */
 button {
-    margin: 10px;
-    padding: 10px 20px;
+    margin: 5px;
+    padding: 8px 15px;
     background-color: blue;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s;
+    font-size: 16px;
 }
 
 button:hover {
@@ -64,13 +83,38 @@ button:hover {
 .saved-blocks {
     width: 90%;
     max-width: 600px;
-    margin-top: 20px;
+    margin-top: 10px; /* Moins d'espace au-dessus */
 }
 
 .saved-item {
     background: white;
-    padding: 10px;
-    margin-top: 10px;
+    padding: 8px;
+    margin-top: 5px; /* Moins d'espace entre les blocs enregistrés */
     border-radius: 5px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+/* Grand input pour chaque ligne */
+.big-input {
+    width: 40%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 5px; /* Réduit l'espace entre le grand input et les petits */
+}
+
+/* Mise à jour de la disposition des lignes */
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px; /* Moins d'espace entre les lignes */
+}
+
+
+/* Mise à jour des petits inputs */
+.row input {
+    width: 18%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }

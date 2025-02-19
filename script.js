@@ -7,17 +7,16 @@ function getPageName() {
 }
 
 function addRow() {
-    if (rowCount >= 10) return;
-    const container = document.getElementById('input-container');
-    const row = document.createElement('div');
-    row.className = 'row';
-    row.innerHTML = `
+    let container = document.getElementById("input-container");
+    let newRow = document.createElement("div");
+    newRow.classList.add("row");
+    newRow.innerHTML = `
+        <input class="big-input" type="text" placeholder="Titre ou description">
         <input type="text" placeholder="Bloc 1">
         <input type="text" placeholder="Bloc 2">
         <input type="text" placeholder="Bloc 3">
     `;
-    container.appendChild(row);
-    rowCount++;
+    container.appendChild(newRow);
 }
 
 function saveData() {
@@ -101,3 +100,49 @@ function loadSavedData() {
 }
 
 window.onload = loadSavedData;
+
+function loadLastSavedDataAsPlaceholder() {
+    console.log("🔄 Chargement des dernières données en placeholder...");
+
+    const pageName = getPageName();
+    let keys = Object.keys(localStorage)
+        .filter(key => key.startsWith(pageName)) // Filtre les clés de cette page
+        .sort()
+        .reverse(); // Trie pour obtenir la plus récente en premier
+
+    if (keys.length === 0) {
+        console.log("❌ Aucune donnée trouvée pour remplir les placeholders.");
+        return;
+    }
+
+    // Récupérer la dernière entrée enregistrée
+    const lastSavedKey = keys[0];
+    const lastSavedData = JSON.parse(localStorage.getItem(lastSavedKey));
+
+    if (!lastSavedData || !Array.isArray(lastSavedData.data)) {
+        console.error("⚠️ Données invalides ou corrompues :", lastSavedData);
+        return;
+    }
+
+    console.log(`📌 Dernière sauvegarde trouvée : ${lastSavedKey}`, lastSavedData);
+
+    const rows = document.querySelectorAll('.row');
+    
+    lastSavedData.data.forEach((rowData, index) => {
+        if (index < rows.length) {
+            let inputs = rows[index].querySelectorAll('input');
+            rowData.forEach((value, i) => {
+                if (inputs[i]) {
+                    inputs[i].placeholder = value || inputs[i].placeholder;
+                }
+            });
+        }
+    });
+}
+
+// Charger les placeholders après le chargement de la page
+window.onload = function () {
+    loadSavedData(); // Charge les données enregistrées en bas
+    loadLastSavedDataAsPlaceholder(); // Remplit les placeholders avec la dernière sauvegarde
+};
+
