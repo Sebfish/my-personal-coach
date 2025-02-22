@@ -62,6 +62,22 @@ textarea {
     border-radius: 5px;
 }
 
+/* Bouton retour homepage */
+.top-right-link {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.8em;    /* Taille réduite */
+    text-decoration: none;
+    color: #333;         /* Couleur personnalisable */
+}
+
+.top-right-link:hover {
+    color: #555;         /* Légère variation au survol */
+    text-decoration: underline;
+}
+
+
 /* Boutons */
 button {
     margin: 5px;
@@ -117,4 +133,18 @@ button:hover {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+/* bouton delete */
+.delete-btn {
+    background-color: transparent;
+    border: none;
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.delete-btn:hover {
+    color: darkred;
 }
