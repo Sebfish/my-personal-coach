@@ -1,7 +1,5 @@
 console.log("Script chargé !");
 
-let rowCount = 5;
-
 function getPageName() {
     return document.title.split(" - ")[0].trim(); // Récupère "Page 1", "Page 2", etc.
 }
@@ -20,24 +18,34 @@ function addRow() {
 }
 
 function saveData() {
-    const pageName = getPageName(); // Utilise maintenant "Page 1", "Page 2"...
+    const pageName = getPageName();
 
     const rows = document.querySelectorAll('.row');
     const data = [];
     rows.forEach(row => {
         const inputs = row.querySelectorAll('input');
-        data.push(Array.from(inputs).map(input => input.value));
+        // On stocke toutes les values des inputs de cette ligne dans un tableau
+        const rowValues = Array.from(inputs).map(input => input.value);
+        data.push(rowValues);
     });
 
     const comment = document.getElementById('comment').value;
     const date = new Date().toLocaleDateString('fr-FR');
+    
+    // Récupération ou initialisation du compteur
     let savedCount = localStorage.getItem(pageName + '-count') || 0;
     savedCount++;
+    
+    // Clé qui identifiera cette sauvegarde
     let saveKey = `${pageName} (${savedCount}) - ${date}`;
+    
+    // Sauvegarde dans localStorage
     localStorage.setItem(saveKey, JSON.stringify({ data, comment }));
     localStorage.setItem(pageName + '-count', savedCount);
     
     console.log("Données enregistrées :", saveKey, JSON.stringify({ data, comment }));
+    
+    // Afficher immédiatement le bloc nouvellement créé
     displaySavedData(saveKey, data, comment);
 }
 
@@ -55,40 +63,82 @@ function displaySavedData(key, data, comment) {
         return;
     }
 
-     // ---- Bouton "X" pour la suppression ----
-     const deleteButton = document.createElement('button');
-     deleteButton.textContent = "X";       // ou "✕"
-     deleteButton.className = 'delete-btn'; // Pour le styliser dans ton CSS
-     deleteButton.title = "Supprimer ce bloc";
- 
-     // Au clic, on supprime le bloc du DOM et du localStorage
-     deleteButton.addEventListener('click', () => {
-         localStorage.removeItem(key);
-         savedItem.remove();
-         console.log(`Bloc "${key}" supprimé du localStorage et de la page.`);
-     });
-
+    // --- Créer l'élément contenant le bloc ---
     const savedItem = document.createElement('div');
     savedItem.className = 'saved-item';
-    savedItem.innerHTML = `<strong>${key}</strong><br>${data.map(row => row.join(' | ')).join('<br>')}<br><em>${comment}</em>`;
-    
-    savedContainer.prepend(savedItem);
+    savedItem.innerHTML = `
+        <strong>${key}</strong><br>
+        ${data.map(row => row.join(' | ')).join('<br>')}<br>
+        <em>${comment}</em>
+    `;
 
-    // Ajout du bouton "X" à la fin (ou au début) du bloc
+    // --- Bouton "X" pour la suppression ---
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = "X"; // ou "✕"
+    deleteButton.className = 'delete-btn'; 
+    deleteButton.title = "Supprimer ce bloc";
+
+    // Au clic, on supprime le bloc du DOM et du localStorage
+    deleteButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Empêche de déclencher l'événement de clic sur savedItem
+        localStorage.removeItem(key);
+        savedItem.remove();
+        console.log(`Bloc "${key}" supprimé du localStorage et de la page.`);
+    });
+
+    // --- Ajouter le bouton X dans le bloc ---
     savedItem.appendChild(deleteButton);
 
-    
+    // --- Au clic sur le bloc, remplir les champs du formulaire ---
+    savedItem.addEventListener('click', () => {
+        console.log(`Remplissage du formulaire avec le bloc "${key}"`);
+        fillFormWithData(data, comment);
+    });
+
+    // --- Insérer dans la page (en haut pour la plus récente) ---
+    savedContainer.prepend(savedItem);
 }
 
+/**
+ * Remplit le formulaire principal (rows) avec les données données (data, comment).
+ */
+function fillFormWithData(data, comment) {
+    // Sélectionne toutes les lignes (row) du formulaire
+    const rows = document.querySelectorAll('.row');
+    
+    // Pour chacune des lignes de données...
+    data.forEach((rowData, rowIndex) => {
+        if (rowIndex < rows.length) {
+            const inputs = rows[rowIndex].querySelectorAll('input');
+            // Pour chaque valeur
+            rowData.forEach((value, inputIndex) => {
+                if (inputs[inputIndex]) {
+                    // On remplit la valeur (pas seulement le placeholder)
+                    inputs[inputIndex].value = value;
+                }
+            });
+        }
+    });
 
+    // Éventuellement, on met à jour le champ commentaire
+    const commentField = document.getElementById('comment');
+    if (commentField) {
+        commentField.value = comment || '';
+    }
+}
+
+// Charge tous les blocs sauvegardés et les affiche
 function loadSavedData() {
     console.log("🔄 Chargement des données sauvegardées pour cette page...");
     const savedContainer = document.getElementById('saved-container');
     savedContainer.innerHTML = "";
 
-    const pageName = getPageName(); // Utilise maintenant "Page 1", "Page 2"...
-    let keys = Object.keys(localStorage).filter(key => key.startsWith(pageName)); // Filtrer par page
-    keys.sort().reverse(); // Trier du plus récent au plus ancien
+    const pageName = getPageName();
+    // Filtre pour exclure la clé "PageX-count" (le compteur) 
+    let keys = Object.keys(localStorage)
+        .filter(key => key.startsWith(pageName) && !key.endsWith('-count'))
+        .sort()
+        .reverse();
 
     console.log(`📌 ${keys.length} entrées trouvées dans localStorage pour ${pageName}`);
 
@@ -97,6 +147,7 @@ function loadSavedData() {
         return;
     }
 
+    // Affiche toutes les sauvegardes existantes
     keys.forEach(key => {
         const savedString = localStorage.getItem(key);
         console.log("📂 Donnée brute récupérée :", savedString);
@@ -117,23 +168,23 @@ function loadSavedData() {
     });
 }
 
-// functionne pas idee est de retrouver les donnees et les preremplir
+// Remplit le placeholder des champs avec la dernière sauvegarde,
+// si on veut afficher la dernière saisie "en grisé" quand c'est vide
 function loadLastSavedDataAsPlaceholder() {
     console.log("🔄 Chargement des dernières données en placeholder...");
 
     const pageName = getPageName();
-    // Récupère toutes les clés concernant la page
     let keys = Object.keys(localStorage)
-        .filter(key => key.startsWith(pageName)) // on ne prend que les clés correspondant à la page actuelle
-        .sort()        // trie par ordre alphabétique
-        .reverse();    // inverse pour avoir la plus récente en premier
+        .filter(key => key.startsWith(pageName) && !key.endsWith('-count'))
+        .sort()
+        .reverse(); // la clé la plus récente en premier
 
     if (keys.length === 0) {
         console.log("❌ Aucune donnée trouvée pour remplir les placeholders.");
         return;
     }
 
-    // On prend la première clé (donc la plus récente)
+    // On prend la première clé (la plus récente)
     const lastSavedKey = keys[0];
     const lastSavedData = JSON.parse(localStorage.getItem(lastSavedKey));
 
@@ -149,23 +200,24 @@ function loadLastSavedDataAsPlaceholder() {
 
     // Pour chaque ligne de la dernière sauvegarde
     lastSavedData.data.forEach((rowData, index) => {
-        // On s’assure qu’il y a toujours un champ dans la page correspondante
         if (index < rows.length) {
             let inputs = rows[index].querySelectorAll('input');
-            // Pour chaque valeur, on la met en placeholder
+            // On ne fait que modifier le placeholder
             rowData.forEach((value, i) => {
                 if (inputs[i]) {
-                    // On ne remplace le placeholder que si c'est nécessaire.
-                    inputs[i].placeholder = value || inputs[i].placeholder;
+                    // Ne remplace le placeholder que s'il est vide
+                    if (!inputs[i].placeholder) {
+                        inputs[i].placeholder = value;
+                    }
                 }
             });
         }
     });
 }
 
-
+// Au chargement de la page, on affiche tous les blocs et on met les placeholders
 window.addEventListener("load", () => {
     loadSavedData();
     loadLastSavedDataAsPlaceholder();
-  });
-  
+    console.log("✅ Page entièrement chargée, données affichées.");
+});
