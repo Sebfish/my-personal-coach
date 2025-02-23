@@ -29,11 +29,7 @@ function saveData() {
         data.push(rowValues);
     });
 
-    let comment = "";
-    const commentElement = document.getElementById('comment');
-    if (commentElement) {
-      comment = commentElement.value; 
-    }
+    const comment = document.getElementById('comment').value;
     const date = new Date().toLocaleDateString('fr-FR');
     
     // Récupération ou initialisation du compteur
